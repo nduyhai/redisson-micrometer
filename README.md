@@ -5,7 +5,7 @@ This is an example about metrics with redisson
 ## View metrics
 
 ```shell
-http://localhost:8080/actuator/metrics
+curl http://localhost:8080/actuator/metrics
 ```
 
 ## Redis with docker

@@ -24,26 +24,26 @@ public class RedissonMetrics implements MeterBinder {
     final var redisson = (Redisson) redissonClient;
 
     Gauge.builder(Names.CONNECTIONS, redisson,
-            client -> client.getConnectionManager().getEntrySet().size())
-        .tags(tags)
+            client -> client.getConnectionManager().getEntrySet().size()).tags(tags)
         .description("Number of active connections to the given db").register(registry);
 
     Gauge.builder(Names.CLIENTS, redisson,
             client -> client.getConnectionManager().getEntrySet().stream()
-                .map(MasterSlaveEntry::getAvailableClients).mapToInt(e -> e).sum())
-        .tags(tags)
+                .map(MasterSlaveEntry::getAvailableClients).mapToInt(e -> e).sum()).tags(tags)
         .description("Number of available clients").register(registry);
 
     Gauge.builder(Names.SLAVES, redisson,
             client -> client.getConnectionManager().getEntrySet().stream()
-                .map(MasterSlaveEntry::getAvailableSlaves).mapToInt(e -> e).sum())
-        .tags(tags)
+                .map(MasterSlaveEntry::getAvailableSlaves).mapToInt(e -> e).sum()).tags(tags)
         .description("Number of available slaves").register(registry);
 
-    Gauge.builder(Names.POOL_SIZE, redisson,
+    Gauge.builder(Names.MASTER_POOL_SIZE, redisson,
             client -> client.getConnectionManager().getConfig().getMasterConnectionPoolSize())
-        .tags(tags)
-        .description("Number of available slaves").register(registry);
+        .tags(tags).description("Number of master pool size").register(registry);
+
+    Gauge.builder(Names.SLAVES_POOL_SIZE, redisson,
+            client -> client.getConnectionManager().getConfig().getSlaveConnectionPoolSize())
+        .description("Number of slaves pool size").register(registry);
   }
 
   static final class Names {
@@ -51,7 +51,8 @@ public class RedissonMetrics implements MeterBinder {
     static final String CONNECTIONS = of("connections");
     static final String CLIENTS = of("clients");
     static final String SLAVES = of("slaves");
-    static final String POOL_SIZE = of("poolSize");
+    static final String MASTER_POOL_SIZE = of("masterPoolSize");
+    static final String SLAVES_POOL_SIZE = of("slavesPoolSize");
 
     private Names() {
     }
